@@ -52,7 +52,7 @@ char** parse_command(char** args, char* command)
 
 	TOKENS = tokens;
 
-	retuen args;
+	return args;
 }
 
 void prog_run(char* comand)
