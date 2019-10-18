@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
-const int MAXSIZE = 128;
+const int MAXSIZE = 1000000;
 int TOKENS;
 
 int ReadLine(char* line)
