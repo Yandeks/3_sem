@@ -87,12 +87,12 @@ int main()
 
                 printf("SEND_TO_CHILD: %s\n", buf1);
 
-                if(size1 < lenght - 1)
+                if(size1 < length - 1)
                 	break;
 
     		}
 
-    		write(fd.bfd[1], \n , 1);
+    		write(fd.bfd[1], "\n" , 1);
 
     		while(1)
     		{
@@ -115,7 +115,7 @@ int main()
     else
     {
     	close(fd.bfd[1]);
-    	close(fd.dfd[0]);
+    	close(fd.ffd[0]);
 
     	while(1)
     	{
