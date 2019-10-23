@@ -4,118 +4,107 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
-const int MAXSIZE = 1000000;
+const int MAXSIZE = 2097152; // ARG_MAX = 2097152
 int TOKENS;
 
-int ReadLine(char* line)
+int Readline(char* line)
 {
-	if (fgets(line, MAXSIZE, stdin) == NULL || strlen(line) == MAXSIZE - 1) 
-	{
-		return 0;
-	} 
-	else
-	{
-		line[strlen(line)-1] = '\0';
-		return 1;
-	}
+if (fgets(line, MAXSIZE, stdin) == NULL || strlen(line) == MAXSIZE - 1)
+{
+return 0;
+}
+else
+{
+line[strlen(line)-1] = '\0';
+return 1;
+}
 }
 
 void freemem(char** args)
 {
-	for(int i = 0; i < TOKENS; i++)
-		free(args[i]);
-	free(args);
-	return;
+for(int i = 0; i < TOKENS; i++)
+free(args[i]);
+free(args);
+return;
 }
 
 char** parse_command(char** args, char* command)
 {
-	int tokens = 0;
-	int size = 10;
-	args = (char**)malloc(10*sizeof(args*));
-	char delim[] = " ,\n";
+int tokens = 0;
+int size = 10;
+args = (char**)malloc(size*sizeof(char*));
+char delim[] = " ,\n";
 
-	for(char* part = strtok(command, delim); part!= NULL; part = strtok(NULL, delim))
-	{
-		args[tokens] = malloc(sizeof(char) * (strlen(part) + 1));
-		strcpy(args[tokens], part);
-		tokens++;
-		if(tokens == size - 1)
-		{
-			size *= 2;
-			args = (char**)realloc(args, size*sizeof(*char));
-		}
-	}
-
-	TOKENS = tokens;
-
-	return args;
+for(char* part = strtok(command, delim); part!= NULL; part = strtok(NULL, delim))
+{
+args[tokens] = malloc(sizeof(char) * (strlen(part) + 1));
+strcpy(args[tokens], part);
+tokens++;
+if(tokens == size - 1)
+{
+size *= 2;
+args = (char**)realloc(args, size*sizeof(char*));
+}
 }
 
-void prog_run(char* comand)
+TOKENS = tokens;
+
+return args;
+}
+ 
+void prog_run(char* command)
 {
-	char** args = parse_command(args, command);
-	const pid_t pid = fork();
-	int status;
+char** args = parse_command(args, command);
+const pid_t pid = fork();
+int status;
 
-	if (pid < 0)
-	{
-		printf("__CREATION_FAILED__\n");
+if (pid < 0)
+{
+printf("__CREATION_FAILED__\n");
 
-		return;
-	}
+return;
+}
 
-	if (pid)
-	{
-		waitpid(pid, &status, 0);
+if (pid)
+{
+waitpid(pid, &status, 0);
 
-		if(!status)
-			prinrf("__SUCCEED__");
+if(!status)
+printf("__SUCCEED__");
 
-		printf("EXIT CODE = %d \n", WEXITSTATUS(status));
-		freemem(args);
+printf("EXIT CODE = %d \n", WEXITSTATUS(status));
+freemem(args);
 
-		return;
-	}
+return;
+}
 
-	execvp(args[0], args);
+execvp(args[0], args);
 
-	printf ("__INVALID_MESSAGE__\n");
-	exit(1);
+printf ("__INVALID_MESSAGE__\n");
+exit(1);
 }
 
 int main()
 {
-	char command[MAXSIZE];
-	char stopword = "exit program";
-	int run = 1;
+char command[MAXSIZE];
+char stopword[12] = "exit program";
+int run = 1;
 
-	while(run)
-	{
-		switch(Readline(command))
-		{
-			case 0:
-			{
-				printf("__INVALID_MESSAGE__\n");
+while(run)
+{
+switch(Readline(command))
+{
+case 0:
+{
+printf("__INVALID_MESSAGE__\n");
 
-				while(!Readline(command));
-				break;
-			}
+while(!Readline(command));
+break;
+}
+ 
+}
 
-			case 1:
-			{
-				if(!strcmp(command, stopword))
-				{
-					run = 0;
-					break;
-				}
-
-				prog_run(command);
-				break;
-			}
-		}
-
-	}
+}
 
 return 0;
 
